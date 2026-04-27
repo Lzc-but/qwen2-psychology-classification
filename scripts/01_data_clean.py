@@ -4,6 +4,10 @@ import os
 import re
 import unicodedata
 
+os.makedirs("data/raw", exist_ok=True)
+os.makedirs("data/processed", exist_ok=True)
+os.makedirs("data/processed/annotated_parts", exist_ok=True)
+
 def split_json_lines_file(input_file, split_num, output_dir):
     """
     将每行一条JSON的数据文件均匀分割成 N 份，并保存到指定输出文件夹
@@ -125,17 +129,17 @@ def clean_gender_prefix(input_file, output_file):
     print(f"原始：{len(data)} 条")
     print(f"最终：{len(cleaned_data)} 条")
 if __name__ == "__main__":
-    # extract_only_title(
-    #     input_file="efad.utf8.txt",       # 你的原始文件
-    #     output_file="emotion_title_only.json"  # 最终干净数据
-    # )
-    # clean_gender_prefix(
-    #     input_file="emotion_title_only.json",
-    #     output_file="emotion_final_clean.json"  # 最终完美数据
-    # )
+    extract_only_title(
+        input_file="data/raw/efad.utf8.txt",       # 原始文件
+        output_file="data/processed/emotion_title_only.json"  # 干净数据
+    )
+    clean_gender_prefix(
+        input_file="data/processed/emotion_title_only.json",
+        output_file="data/processed/emotion_final_clean.json"  # 最终完美数据
+    )
     # 把 efad.utf8.txt 分割成20份，保存到 annotated_parts 文件夹
     split_json_lines_file(
-        input_file="emotion_final_clean.json",
+        input_file="data/processed/emotion_final_clean.json",
         split_num=20,
-        output_dir="annotated_parts"
+        output_dir="data/processed/annotated_parts"
     )

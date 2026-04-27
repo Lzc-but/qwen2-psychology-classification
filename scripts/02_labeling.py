@@ -8,8 +8,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 # ===================== 【你的路径】核心配置 =====================
 MODEL_PATH = "/root/autodl-tmp/models/Qwen/Qwen2___5-7B-Instruct"  # 你的模型路径
 CONFIDENCE_THRESHOLD = 0.7  # 置信度过滤
-INPUT_DIR = "/root/autodl-tmp/dataset/annotated_parts"    # 20份数据目录
-OUTPUT_DIR = "/root/autodl-tmp/dataset/labeled_final"   # 输出目录
+INPUT_DIR = "data/processed/annotated_parts"    # 20份数据目录
+OUTPUT_DIR = "data/labeled/all"   # 输出目录
 # ================================================================
 
 # 4分类 + 严格JSON输出Prompt
