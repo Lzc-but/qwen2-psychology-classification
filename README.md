@@ -6,7 +6,7 @@
 ---
 
 ## 📌 项目说明
-本项目使用 Qwen2.5-7B 大模型进行轻量级 LoRA 微调，实现对心理健康文本的自动情绪分类。整套流程可复现、可部署、可导出 GGUF 模型在本地运行。需要注意微调相关代码是租autodl的服务器跑的。
+本项目使用 Qwen2.5-7B 大模型进行轻量级 LoRA 微调，实现对心理健康文本的自动情绪分类。整套流程可复现、可部署、可导出 GGUF 模型在本地运行。需要注意对数据进行清洗，提取title是在本地电脑运行，微调是在autodl的服务器上跑的。
 
 其中原始数据来源于：https://aistudio.baidu.com/datasetdetail/37106
 
@@ -82,23 +82,32 @@ python scripts/merge_lora.py
 ```
 
 ### 8. 导出 GGUF 模型（本地部署可用）
+首先在autodl-tmp目录下先下载llama的zip，
 ```bash
-# 安装 llama.cpp
-git clone https://gitee.com/mirrors/llama-cpp.git
-cd llama-cpp
+wget https://github.com/ggerganov/llama.cpp/archive/refs/heads/master.zip
+unzip master.zip
+mv llama.cpp-master llama.cpp
+```
+随后安装依赖库
+```bash
+cd llama.cpp
 pip install -r requirements.txt
-
-# 转换为 GGUF 格式
-python convert.py ../models/qwen_psy_merged --outfile ../outputs/qwen_psy.f16.gguf --outtype f16
-
-# 量化为 4bit（更小更快）
-./quantize ../outputs/qwen_psy.f16.gguf ../outputs/qwen_psy.q4_0.gguf q4_0
 ```
-
-导出完成后，你会得到：
+最后进入autodl-tmp目录下，运行下面命令：
+```bash
+python llama.cpp/convert_hf_to_gguf.py qwen_psy_merged --outfile qwen_psy_v1.f16.gguf --outtype f16
 ```
-outputs/qwen_psy.q4_0.gguf
+最终会得到qwen_psy_v1.f16.gguf文件，可通过du命令查看文件大小为15G，如果需要进一步压缩，量化为4bit，则需要用到qunatize，命令为：
+```bash
+cd llama.cpp && mkdir build && cd build
+cmake ..
+make -j4
 ```
+随后回到autodl-tmp目录，使用下面命令进行量化：
+```bash
+./llama.cpp/build/bin/llama-quantize qwen_psy_v1.f16.gguf qwen_psy_v1.q4_0.gguf q4_0
+```
+最终会得到qwen_psy_v1.q4_0.gguf，大小仅为4G
 
 ### 9. 模型效果评估
 ```bash
